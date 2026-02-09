@@ -25,6 +25,7 @@ $clients = $stmt->fetchAll(PDO::FETCH_OBJ);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title']);
     $description = trim($_POST['description']);
+    $imagePath = null;
     $status = $_POST['status'];
     $client_id = $_POST['client_id'] ?? null;
 
@@ -41,16 +42,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Project status is required';
     }
 
+    // Handle image upload (the design is very human)
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        $maxSize = 5 * 1024 * 1024; // Basically means 5mb
+
+        if (!in_array($_FILES['image']['type'], $allowedTypes)) {
+            $errors[] = 'Invalid image type. Only JPG, PNG, and GIF are allowed.';
+        } elseif ($_FILES['image']['size'] > $maxSize) {
+            $errors[] = 'Image too large. Maximum size is 5MB';
+        } else {
+            // Generate filename
+            $extension = pathInfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $filename = 'project_' . time() . '_' . uniqid() . '.' . $extension;
+            $uploadDir = 'upload/projects/';
+        }
+
+        // Create director if it doesn't exist
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $uploadPath = $uploadDir . $filename;
+
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadPath)) {
+            $imagePath = $filename;
+        } else {
+            $errors[] = 'Failed to upload image';
+        }
+    }
+
     // Create project if no errors
     if (empty($errors)) {
         $stmt = $db->prepare("
-            INSERT INTO projects (title, description, status, coder_id, client_id)
-            VALUES (:title, :description, :status, :coder_id, :client_id)
+            INSERT INTO projects (title, description, image, status, coder_id, client_id)
+            VALUES (:title, :description, :image, :status, :coder_id, :client_id)
         ");
 
         $stmt->execute([
             'title' => $title,
             'description' => $description,
+            'image' => $imagePath,
             'status' => $status,
             'coder_id' => $user['user_id'],
             'client_id' => $client_id ?: null  // null if no client selected
@@ -90,7 +122,7 @@ require_once './includes/header.php';
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Project Title *</label>
             <input type="text" id="title" name="title" value="<?= htmlspecialchars($_POST['title'] ?? ''); ?>"
@@ -103,6 +135,12 @@ require_once './includes/header.php';
             <textarea id="description" name="description"
                 placeholder="Describe the project scope, goals, and deliverables..."><?= htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
             <small>Provide detailed information about what needs to be done</small>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Upload an image (optional)</label>
+            <input type="file" name="image" id="image" accept="image/*">
+            <small>Supported file types: JPG, PNG, GIF (Max 5MB)</small>
         </div>
 
         <div class="form-group">

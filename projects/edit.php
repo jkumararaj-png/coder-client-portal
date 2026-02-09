@@ -50,6 +50,7 @@ $clients = $stmt->fetchAll(PDO::FETCH_OBJ);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title']);
     $description = trim($_POST['description']);
+    $imagePath = $project->image; // Keep existing image
     $status = $_POST['status'];
     $client_id = $_POST['client_id'] ?? null;
 
@@ -66,12 +67,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Project status is required';
     }
 
+    // Handle image upload
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        $maxSize = 5 * 1024 * 1024; // Basically means 5mb
+
+        if (!in_array($_FILES['image']['type'], $allowedTypes)) {
+            $errors[] = 'Invalid image type. Only JPG, PNG, and GIF are allowed.';
+        } elseif ($_FILES['image']['size'] > $maxSize) {
+            $errors[] = 'Image too large. Maximum size is 5MB';
+        } else {
+            // Generate filename
+            $extension = pathInfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $filename = 'project_' . time() . '_' . uniqid() . '.' . $extension;
+            $uploadDir = 'upload/projects/';
+        }
+
+        // Create director if it doesn't exist
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $uploadPath = $uploadDir . $filename;
+
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadPath)) {
+            $imagePath = $filename;
+        } else {
+            $errors[] = 'Failed to upload image';
+        }
+    }
+
     // Update project if no errors
     if (empty($errors)) {
         $stmt = $db->prepare("
             UPDATE projects 
             SET title = :title, 
                 description = :description, 
+                image = :image,
                 status = :status, 
                 client_id = :client_id
             WHERE project_id = :project_id 
@@ -81,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([
             'title' => $title,
             'description' => $description,
+            'image' => $imagePath,
             'status' => $status,
             'client_id' => $client_id ?: null,
             'project_id' => $projectId,
@@ -103,8 +136,7 @@ require_once './includes/header.php';
 
 <div class="card form-container">
     <h2>Edit Project</h2>
-    <p style="color: #888; margin-bottom: 20px;">Project #
-        <?= $projectId; ?>
+    <p style="color: #888; margin-bottom: 20px;">Project #<?= $projectId; ?>
     </p>
 
     <?php if (!empty($errors)): ?>
@@ -126,7 +158,7 @@ require_once './includes/header.php';
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Project Title *</label>
             <input type="text" id="title" name="title"
@@ -137,6 +169,22 @@ require_once './includes/header.php';
             <label for="description">Project Description *</label>
             <textarea id="description"
                 name="description"><?= htmlspecialchars($_POST['description'] ?? $project->description); ?></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Project Image</label>
+
+            <?php if ($project->image): ?>
+                <div style="margin-bottom: 10px;">
+                    <img src="<?= BASE_URL; ?>/uploads/projects/<?= htmlspecialchars($project->image); ?>"
+                        alt="Current project image"
+                        style="max-width: 300px; border-radius: 8px; border: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 12px; margin-top: 5px">Current image</p>
+                </div>
+            <?php endif ?>
+
+            <input type="file" id="image" name="image" accept="image/*">
+            <small>Upload a new image to replace the current one (optional)</small>
         </div>
 
         <div class="form-group">
@@ -195,9 +243,9 @@ require_once './includes/header.php';
     </form>
 
     <!-- Optional: Delete functionality -->
-    <div class="danger-zone">
+    <div class="danger-zone errors">
         <h3>⚠️ Danger Zone</h3>
-        <p style="color: #888; margin-bottom: 15px;">
+        <p>
             Deleting a project is permanent and cannot be undone. All associated feedback will also be deleted.
         </p>
         <button

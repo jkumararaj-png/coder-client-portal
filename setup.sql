@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS
         project_id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(50) NOT NULL,
         description VARCHAR(1000) NOT NULL,
+        image VARCHAR(255) DEFAULT NULL,
         status INT NOT NULL,
         coder_id INT NOT NULL,
         client_id INT,
@@ -104,13 +105,20 @@ CREATE TABLE IF NOT EXISTS
     );
 
 -- Test project
--- Create sample project
 INSERT INTO
-    projects (title, description, status, coder_id, client_id)
+    projects (
+        title,
+        description,
+        image,
+        status,
+        coder_id,
+        client_id
+    )
 VALUES
     (
         'E-commerce Platform',
         'Build a full-stack e-commerce platform with payment integration',
+        DEFAULT,
         1,
         (
             SELECT

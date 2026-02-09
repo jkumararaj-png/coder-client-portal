@@ -98,6 +98,15 @@ require_once './includes/header.php';
                     <?= htmlspecialchars($project->description); ?>
                 </div>
 
+                <?php if ($project->image): ?>
+                    <div class="detail-label">Project Image:</div>
+                    <div class="detail-value">
+                        <img src="<?= BASE_URL; ?>/uploads/projects/<?= htmlspecialchars($project->image); ?>"
+                            alt="<?= htmlspecialchars($project->title); ?>"
+                            style="max-width: 100%; border-radius: 8px; border: 1px solid var(--color-border); margin-top: 10px;">
+                    </div>
+                <?php endif; ?>
+
                 <div class="detail-label">Status:</div>
                 <div class="detail-value">
                     <?= $statusLabels[$project->status]; ?>
