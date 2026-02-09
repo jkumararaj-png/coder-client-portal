@@ -235,7 +235,7 @@ require_once './includes/header.php';
             <?php endif; ?>
         </div>
 
-        <?php if ($user['role'] === 'client'): ?>
+        <?php if ($user['role'] === 'coder' || $user['role'] === 'client'): ?>
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--color-border);">
                 <a href="<?= BASE_URL; ?>/feedback/create?project_id=<?= $project->project_id; ?>" class="btn btn-success"
                     style="width: 100%; text-align: center;">
