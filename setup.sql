@@ -1,3 +1,4 @@
+-- ALL USER PASSWORDS ARE "password"
 CREATE DATABASE coder_client_portal;
 
 USE coder_client_portal;
@@ -32,7 +33,7 @@ CREATE TABLE IF NOT EXISTS
         CONSTRAINT fk_users_roles FOREIGN KEY (role_id) REFERENCES ROLES (role_id)
     );
 
--- Create admin user (password: password)
+-- Create admin user
 INSERT INTO
     users (name, email, password, role_id)
 VALUES
