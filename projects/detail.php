@@ -69,6 +69,15 @@ $stmt = $db->prepare("
 $stmt->execute(['project_id' => $projectId]);
 $feedbacks = $stmt->fetchAll(PDO::FETCH_OBJ);
 
+// GitHub embed card link generation
+$githubUrl = $project->github_link;
+$hash = bin2hex(random_bytes(10));
+$parsedUrl = parse_url($githubUrl);
+$path = trim($parsedUrl['path'], '/');
+[$username, $repo] = explode('/', $path, 2);
+
+$ogImage = "https://opengraph.githubassets.com/$hash/$username/$repo";
+
 require_once './includes/header.php';
 ?>
 
@@ -122,8 +131,7 @@ require_once './includes/header.php';
 
                         <!-- GitHub Card Preview using opengraph.io -->
                         <div class="github-card">
-                            <img src="https://opengraph.githubassets.com/1/jkumararaj-png/coder-client-portal"
-                                alt="GitHub Repository Preview"
+                            <img src="<?= htmlspecialchars($ogImage); ?>" alt="GitHub Repository Preview"
                                 style="width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--color-border);">
                         </div>
                     </div>
