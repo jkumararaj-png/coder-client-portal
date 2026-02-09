@@ -14,7 +14,7 @@ $success = '';
 $userId = $_GET['id'] ?? null;
 
 if (!$userId) {
-    header('Location: ' . BASE_URL . '/admin/users');
+    header('Location: ' . BASE_URL . '/dashboard/admin/users');
     exit;
 }
 
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'user_id' => $userId
         ]);
 
-        $success = 'User role updated successfully!';
+        $success = 'User updated successfully!';
 
         // Refresh user data
         $stmt = $db->prepare("
@@ -70,21 +70,6 @@ require_once './includes/header.php';
 ?>
 
 <style>
-    .form-container {
-        max-width: 600px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
-        color: #fff;
-    }
-
     .form-group select {
         width: 100%;
         padding: 12px;
@@ -121,7 +106,7 @@ require_once './includes/header.php';
 <a href="<?= BASE_URL; ?>/dashboard/admin/users" class="back-link">← Back to Users</a>
 
 <div class="card form-container">
-    <h2>Edit User Role</h2>
+    <h2>Edit User</h2>
 
     <?php if (!empty($errors)): ?>
         <div class="error">
@@ -163,6 +148,22 @@ require_once './includes/header.php';
             <a href="<?= BASE_URL; ?>/dashboard/admin/users" class="btn">Cancel</a>
         </div>
     </form>
+
+    <div class="danger-zone errors">
+        <h3>⚠️ Danger Zone</h3>
+        <p>
+            Deleting a user is permanent and cannot be undone. All their projects and feedback will also be deleted.
+        </p>
+        <?php if ($editUser->user_id != $user['user_id']): ?>
+            <button
+                onclick="if(confirm('Are you sure you want to delete this user? This cannot be undone!')) { window.location.href='<?= BASE_URL; ?>/dashboard/admin/delete-user?id=<?= $userId; ?>'; }"
+                class="btn btn-danger">
+                Delete User Account
+            </button>
+        <?php else: ?>
+            <p style="color: var(--color-text-dim); font-style: italic;">You cannot delete your own account.</p>
+        <?php endif; ?>
+    </div>
 </div>
 
 <?php require_once './includes/footer.php'; ?>

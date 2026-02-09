@@ -53,9 +53,7 @@
             <nav class="nav" id="mobileNav">
                 <?php if (isset($_SESSION['authenticated']) && $_SESSION['authenticated']): ?>
                     <a href="<?= BASE_URL; ?>/dashboard">Dashboard</a>
-                    <?php if ($user['role'] === 'admin'): ?>
-                        <a href="<?= BASE_URL; ?>/projects">All Projects</a>
-                    <?php elseif ($user['role'] === 'coder'): ?>
+                    <?php if ($user['role'] === 'coder'): ?>
                         <a href="<?= BASE_URL; ?>/projects">My Projects</a>
                         <a href="<?= BASE_URL; ?>/projects/create">Create Project</a>
                     <?php elseif ($user['role'] === 'client'): ?>

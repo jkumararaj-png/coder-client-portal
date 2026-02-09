@@ -54,7 +54,7 @@ require_once './includes/header.php';
                     </td>
                     <td>
                         <a href="<?= BASE_URL; ?>/dashboard/admin/edit-user?id=<?= $u->user_id; ?>" class="btn">Edit
-                            Role</a>
+                            User</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

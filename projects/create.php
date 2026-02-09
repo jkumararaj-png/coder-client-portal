@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Generate filename
             $extension = pathInfo($_FILES['image']['name'], PATHINFO_EXTENSION);
             $filename = 'project_' . time() . '_' . uniqid() . '.' . $extension;
-            $uploadDir = 'upload/projects/';
+            $uploadDir = 'uploads/projects/';
         }
 
         // Create director if it doesn't exist

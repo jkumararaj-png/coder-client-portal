@@ -39,6 +39,12 @@ if (!$project) {
     exit;
 }
 
+if ($user['role'] === 'admin') {
+    echo "<div class='card'><p>Admins do not have access to project details for privacy reasons.</p></div>";
+    require_once './includes/footer.php';
+    exit;
+}
+
 // Check access permissions
 if ($user['role'] === 'coder' && $project->coder_id != $user['user_id']) {
     echo "<div class='card'><p>You don't have permission to view this project.</p></div>";

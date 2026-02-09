@@ -118,7 +118,7 @@ VALUES
     (
         'E-commerce Platform',
         'Build a full-stack e-commerce platform with payment integration',
-        DEFAULT,
+        'project_1770644319_6989e35f98142.png',
         1,
         (
             SELECT

@@ -54,6 +54,10 @@ switch ($path) {
         require 'dashboard/admin/edit-user.php';
         break;
 
+    case 'dashboard/admin/delete-user':
+        require 'dashboard/admin/delete-user.php';
+        break;
+
     case 'dashboard/coder':
         require 'dashboard/coder.php';
         break;

@@ -124,44 +124,4 @@ require_once './includes/header.php';
     </table>
 </div>
 
-<div class="card">
-    <div class="section-header">
-        <h2>Recent Projects</h2>
-        <a href="<?= BASE_URL; ?>/projects" class="btn">View All</a>
-    </div>
-
-    <?php if (count($recentProjects) > 0): ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Project</th>
-                    <th>Coder</th>
-                    <th>Client</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($recentProjects as $project): ?>
-                    <tr>
-                        <td><?= $project->project_id; ?></td>
-                        <td>
-                            <strong><?= htmlspecialchars($project->title); ?></strong>
-                        </td>
-                        <td><?= htmlspecialchars($project->coder_name ?? 'Unassigned'); ?></td>
-                        <td><?= htmlspecialchars($project->client_name ?? 'Unassigned'); ?></td>
-                        <td>
-                            <span class="project-status" style="background-color: <?= $statusColors[$project->status]; ?>">
-                                <?= $statusLabels[$project->status]; ?>
-                            </span>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php else: ?>
-        <p style="text-align: center; color: #888; padding: 40px;">No projects created yet</p>
-    <?php endif; ?>
-</div>
-
 <?php require_once './includes/footer.php'; ?>

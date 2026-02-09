@@ -9,33 +9,7 @@ require_once './config/db.php';
 require_once './includes/constants.php';
 
 // Build query based on role
-if ($user['role'] === 'admin') {
-    $stmt = $db->query("
-        SELECT projects.project_id,
-               projects.title,
-               projects.description,
-               projects.status,
-               projects.coder_id,
-               projects.client_id,
-               coders.name as coder_name,
-               clients.name as client_name,
-               COUNT(feedback.feedback_id) as feedback_count
-        FROM projects
-        LEFT JOIN users as coders ON projects.coder_id = coders.user_id
-        LEFT JOIN users as clients ON projects.client_id = clients.user_id
-        LEFT JOIN feedback ON feedback.project_id = projects.project_id
-        GROUP BY projects.project_id, 
-                 projects.title, 
-                 projects.description, 
-                 projects.status, 
-                 projects.coder_id, 
-                 projects.client_id,
-                 coders.name,
-                 clients.name
-        ORDER BY projects.project_id DESC
-    ");
-
-} elseif ($user['role'] === 'coder') {
+if ($user['role'] === 'coder') {
     $stmt = $db->prepare("
         SELECT projects.project_id,
                projects.title,
@@ -95,9 +69,7 @@ require_once './includes/header.php';
 
 <div class="page-header">
     <h2>
-        <?php if ($user['role'] === 'admin'): ?>
-            All Projects
-        <?php elseif ($user['role'] === 'coder'): ?>
+        <?php if ($user['role'] === 'coder'): ?>
             My Projects
         <?php else: ?>
             My Projects
