@@ -70,13 +70,29 @@ $stmt->execute(['project_id' => $projectId]);
 $feedbacks = $stmt->fetchAll(PDO::FETCH_OBJ);
 
 // GitHub embed card link generation
-$githubUrl = $project->github_link;
-$hash = bin2hex(random_bytes(10));
-$parsedUrl = parse_url($githubUrl);
-$path = trim($parsedUrl['path'], '/');
-[$username, $repo] = explode('/', $path, 2);
+$ogImage = null;
 
-$ogImage = "https://opengraph.githubassets.com/$hash/$username/$repo";
+if (!empty($project->github_link)) {
+    $githubUrl = trim($project->github_link);
+    $hash = bin2hex(random_bytes(10));
+
+    $parsedUrl = parse_url($githubUrl);
+
+    if (
+        isset($parsedUrl['host'], $parsedUrl['path']) &&
+        $parsedUrl['host'] === 'github.com'
+    ) {
+        $pathParts = array_values(array_filter(
+            explode('/', $parsedUrl['path'])
+        ));
+
+        if (count($pathParts) >= 2) {
+            $username = $pathParts[0];
+            $repo = $pathParts[1];
+            $ogImage = "https://opengraph.githubassets.com/$hash/$username/$repo";
+        }
+    }
+}
 
 require_once './includes/header.php';
 ?>
@@ -131,8 +147,12 @@ require_once './includes/header.php';
 
                         <!-- GitHub Card Preview using opengraph.io -->
                         <div class="github-card">
-                            <img src="<?= htmlspecialchars($ogImage); ?>" alt="GitHub Repository Preview"
-                                style="width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--color-border);">
+                            <?php if ($ogImage): ?>
+                                <img src="<?= htmlspecialchars($ogImage); ?>" alt="GitHub Repository Preview"
+                                    style="width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--color-border);">
+                            <?php else: ?>
+                                <p>Your GitHub link may be invalid.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
