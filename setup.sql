@@ -98,6 +98,7 @@ CREATE TABLE IF NOT EXISTS
         title VARCHAR(50) NOT NULL,
         description VARCHAR(1000) NOT NULL,
         image VARCHAR(255) DEFAULT NULL,
+        github_link VARCHAR(500) DEFAULT NULL,
         status INT NOT NULL,
         coder_id INT NOT NULL,
         client_id INT,
@@ -120,6 +121,7 @@ VALUES
         'E-commerce Platform',
         'Build a full-stack e-commerce platform with payment integration',
         'project_1770644319_6989e35f98142.png',
+        'https://github.com/jkumararaj-png/coder-client-portal',
         1,
         (
             SELECT

@@ -51,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title']);
     $description = trim($_POST['description']);
     $imagePath = $project->image; // Keep existing image
+    $github_link = trim($_POST['github_link'] ?? '');
     $status = $_POST['status'];
     $client_id = $_POST['client_id'] ?? null;
 
@@ -104,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             SET title = :title, 
                 description = :description, 
                 image = :image,
+                github_link = :github_link,
                 status = :status, 
                 client_id = :client_id
             WHERE project_id = :project_id 
@@ -114,6 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => $title,
             'description' => $description,
             'image' => $imagePath,
+            'github_link' => $github_link,
             'status' => $status,
             'client_id' => $client_id ?: null,
             'project_id' => $projectId,
@@ -182,6 +185,14 @@ require_once './includes/header.php';
                     <p style="color: var(--color-text-dim); font-size: 12px; margin-top: 5px">Current image</p>
                 </div>
             <?php endif ?>
+
+            <div class="form-group">
+                <label for="github_link">GitHub Repository Link (Optional)</label>
+                <input type="url" id="github_link" name="github_link"
+                    value="<?= htmlspecialchars($_POST['github_link'] ?? $project->github_link ?? ''); ?>"
+                    placeholder="https://github.com/username/repository">
+                <small>Link to the GitHub repository for this project</small>
+            </div>
 
             <input type="file" id="image" name="image" accept="image/*">
             <small>Upload a new image to replace the current one (optional)</small>

@@ -113,6 +113,22 @@ require_once './includes/header.php';
                     </div>
                 <?php endif; ?>
 
+                <?php if ($project->github_link): ?>
+                    <div class="detail-label">GitHub Repository:</div>
+                    <div class="detail-value">
+                        <a href="<?= htmlspecialchars($project->github_link); ?>" target="_blank" class="github-link-btn">
+                            View on GitHub ↗
+                        </a>
+
+                        <!-- GitHub Card Preview using opengraph.io -->
+                        <div class="github-card">
+                            <img src="https://opengraph.githubassets.com/1/jkumararaj-png/coder-client-portal"
+                                alt="GitHub Repository Preview"
+                                style="width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--color-border);">
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <div class="detail-label">Status:</div>
                 <div class="detail-value">
                     <?= $statusLabels[$project->status]; ?>

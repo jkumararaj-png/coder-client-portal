@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title']);
     $description = trim($_POST['description']);
     $imagePath = null;
+    $github_link = trim($_POST['github_link'] ?? '');
     $status = $_POST['status'];
     $client_id = $_POST['client_id'] ?? null;
 
@@ -75,14 +76,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Create project if no errors
     if (empty($errors)) {
         $stmt = $db->prepare("
-            INSERT INTO projects (title, description, image, status, coder_id, client_id)
-            VALUES (:title, :description, :image, :status, :coder_id, :client_id)
+            INSERT INTO projects (title, description, image, github_link, status, coder_id, client_id)
+            VALUES (:title, :description, :image, :github_link, :status, :coder_id, :client_id)
         ");
 
         $stmt->execute([
             'title' => $title,
             'description' => $description,
             'image' => $imagePath,
+            'github_link' => $github_link ?: null,
             'status' => $status,
             'coder_id' => $user['user_id'],
             'client_id' => $client_id ?: null  // null if no client selected
@@ -141,6 +143,14 @@ require_once './includes/header.php';
             <label for="image">Upload an image (optional)</label>
             <input type="file" name="image" id="image" accept="image/*">
             <small>Supported file types: JPG, PNG, GIF (Max 5MB)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="github_link">GitHub Repository Link (Optional)</label>
+            <input type="url" id="github_link" name="github_link"
+                value="<?= htmlspecialchars($_POST['github_link'] ?? ''); ?>"
+                placeholder="https://github.com/username/repository">
+            <small>Link to the GitHub repository for this project</small>
         </div>
 
         <div class="form-group">

@@ -797,6 +797,11 @@ label {
   color: white;
 }
 
+.detail-value iframe {
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+}
+
 .project-details {
   display: flex;
   gap: 30px;
