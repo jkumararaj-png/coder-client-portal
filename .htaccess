@@ -1,0 +1,10 @@
+RewriteEngine On
+RewriteBase /Projects/Sem-1/Mini-Project/Coder-Client-Portal/
+
+RewriteRule ^projects/?$ index.php [L,QSA]
+RewriteRule ^dashboard/?$ index.php [L,QSA]
+RewriteRule ^dashboard/admin/?$ index.php [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L,QSA]
